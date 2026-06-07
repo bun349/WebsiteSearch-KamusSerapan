@@ -44,47 +44,61 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ── Custom CSS ──────────────────────────────────────────────────────────────
+# ── Custom CSS (Rapi, Lurus Tengah & Light Mode) ─────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght=700;900&family=DM+Sans:wght=300;400;500&family=DM+Mono:wght=400;500&display=swap');
 
-/* ── Global ── */
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif;
-    color: #e8e2d5;
+/* ── Menghilangkan Header Putih Bawaan Streamlit Teratas ── */
+header {
+    visibility: hidden !important;
+    height: 0px !important;
 }
 
+/* ── Global App & Background ── */
 .stApp {
-    background: #0f0e0c;
+    background: #fcfbfa;
     background-image:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(180,140,60,0.12) 0%, transparent 70%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M0 0h60v60H0z' fill='none'/%3E%3Ccircle cx='30' cy='30' r='0.6' fill='%23b48c3c' fill-opacity='0.18'/%3E%3C/svg%3E");
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(180,140,60,0.08) 0%, transparent 70%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M0 0h60v60H0z' fill='none'/%3E%3Ccircle cx='30' cy='30' r='0.6' fill='%23b48c3c' fill-opacity='0.15'/%3E%3C/svg%3E");
+    font-family: 'DM Sans', sans-serif;
+}
+
+/* Fix text color globally & rapihkan margin atas pasca header hilang */
+.main .block-container {
+    color: #2c2519;
+    padding-top: 2rem !important;
 }
 
 /* ── Header Block ── */
 .header-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    padding: 3rem 1rem 1.5rem;
+    padding: 1rem 0 1rem 0;
+    width: 100%;
 }
 
 .header-eyebrow {
     font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     letter-spacing: 0.25em;
     color: #b48c3c;
     text-transform: uppercase;
     margin-bottom: 0.75rem;
+    width: 100%;
 }
 
 .header-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
     font-weight: 900;
-    line-height: 1.1;
-    color: #f0e8d0;
-    margin: 0 0 1rem;
+    line-height: 1.2;
+    color: #1a150e;
+    margin: 0 0 0.75rem 0;
     letter-spacing: -0.02em;
+    width: 100%;
 }
 
 .header-title span {
@@ -93,197 +107,138 @@ html, body, [class*="css"] {
 
 .header-subtitle {
     font-size: 0.95rem;
-    color: #8a8070;
+    color: #6b6050;
     font-weight: 300;
-    max-width: 480px;
+    width: 100%;
     margin: 0 auto;
-    line-height: 1.7;
+    line-height: 1.6;
 }
 
 .divider {
     border: none;
-    border-top: 1px solid rgba(180,140,60,0.2);
-    margin: 1.5rem auto;
-    max-width: 120px;
+    border-top: 1px solid rgba(180,140,60,0.3);
+    margin: 1.5rem auto 2rem auto;
+    width: 120px;
 }
 
-/* ── Tabs ── */
+/* ── Tabs Customization ── */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 0;
-    background: #1a1914;
-    border: 1px solid rgba(180,140,60,0.2);
+    gap: 8px;
+    background: #f4f1ea;
+    border: 1px solid rgba(180,140,60,0.25);
     border-radius: 10px;
-    padding: 4px;
-    margin-bottom: 1.5rem;
+    padding: 6px;
+    margin-bottom: 2rem;
 }
 
 .stTabs [data-baseweb="tab"] {
     font-family: 'DM Sans', sans-serif;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    color: #6b6355;
+    color: #7a6f5d;
     background: transparent;
     border-radius: 7px;
-    padding: 0.5rem 1.4rem;
+    padding: 0.5rem 1.5rem;
     letter-spacing: 0.02em;
     transition: all 0.2s ease;
     border: none;
 }
 
 .stTabs [aria-selected="true"] {
-    background: rgba(180,140,60,0.15) !important;
-    color: #d4a843 !important;
-    border: 1px solid rgba(180,140,60,0.3) !important;
+    background: #ffffff !important;
+    color: #b48c3c !important;
+    box-shadow: 0 2px 8px rgba(180,140,60,0.12) !important;
 }
 
-.stTabs [data-baseweb="tab-highlight"] { display: none; }
-.stTabs [data-baseweb="tab-border"]    { display: none; }
+.stTabs [data-baseweb="tab-highlight"], 
+.stTabs [data-baseweb="tab-border"] { 
+    display: none !important; 
+}
 
 /* ── Section Labels ── */
 .section-label {
     font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: #b48c3c;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 
-/* ── Input Field ── */
-.stTextInput > div > div > input {
-    background: #1a1914 !important;
-    border: 1px solid rgba(180,140,60,0.25) !important;
-    border-radius: 10px !important;
-    color: #e8e2d5 !important;
+/* ── Form Inputs ── */
+div[data-testid="stTextInput"] input, .stSelectbox div[data-baseweb="select"] {
+    background: #ffffff !important;
+    border: 1px solid rgba(180,140,60,0.3) !important;
+    border-radius: 8px !important;
+    color: #2c2519 !important;
     font-family: 'DM Sans', sans-serif !important;
-    font-size: 1rem !important;
-    padding: 0.75rem 1rem !important;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-.stTextInput > div > div > input:focus {
-    border-color: rgba(180,140,60,0.6) !important;
-    box-shadow: 0 0 0 3px rgba(180,140,60,0.08) !important;
-    outline: none !important;
+/* Memastikan font pilihan dropdown selectbox selaras */
+div[data-baseweb="popover"] ul {
+    font-family: 'DM Sans', sans-serif !important;
 }
 
-.stTextInput > div > div > input::placeholder { color: #4a4535 !important; }
-
-/* ── Text Area ── */
-.stTextArea > div > div > textarea {
-    background: #1a1914 !important;
-    border: 1px solid rgba(180,140,60,0.25) !important;
-    border-radius: 10px !important;
-    color: #c8bfa8 !important;
+div[data-testid="stTextArea"] textarea {
+    background: #ffffff !important;
+    border: 1px solid rgba(180,140,60,0.3) !important;
+    border-radius: 8px !important;
+    color: #3a3225 !important;
     font-family: 'DM Mono', monospace !important;
-    font-size: 0.82rem !important;
-    line-height: 1.7 !important;
+    font-size: 0.85rem !important;
     padding: 1rem !important;
-    transition: border-color 0.2s ease !important;
-}
-
-.stTextArea > div > div > textarea:focus {
-    border-color: rgba(180,140,60,0.6) !important;
-    box-shadow: 0 0 0 3px rgba(180,140,60,0.08) !important;
-    outline: none !important;
 }
 
 /* ── Buttons ── */
-.stButton > button {
+div[data-testid="stButton"] button {
     background: linear-gradient(135deg, #b48c3c 0%, #d4a843 100%) !important;
-    color: #0f0e0c !important;
+    color: #ffffff !important;
     font-family: 'DM Sans', sans-serif !important;
     font-weight: 600 !important;
-    font-size: 0.88rem !important;
-    letter-spacing: 0.04em !important;
+    font-size: 0.9rem !important;
     border: none !important;
-    border-radius: 10px !important;
-    padding: 0.6rem 1.6rem !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease !important;
-    box-shadow: 0 2px 12px rgba(180,140,60,0.25) !important;
+    box-shadow: 0 2px 10px rgba(180,140,60,0.15) !important;
+    width: 100%;
 }
 
-.stButton > button:hover {
+div[data-testid="stButton"] button:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 20px rgba(180,140,60,0.35) !important;
+    box-shadow: 0 5px 15px rgba(180,140,60,0.25) !important;
     background: linear-gradient(135deg, #c49e4a 0%, #e0b84e 100%) !important;
 }
 
-.stButton > button:active {
-    transform: translateY(0) !important;
-}
-
-/* ── DataFrame ── */
-.stDataFrame {
+/* ── Dataframe Wrapper ── */
+div[data-testid="stDataFrame"] {
     border: 1px solid rgba(180,140,60,0.2) !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     overflow: hidden !important;
+    margin-top: 1rem;
 }
-
-.stDataFrame [data-testid="stDataFrameResizable"] {
-    border-radius: 12px !important;
-    background: #1a1914 !important;
-}
-
-/* ── Alert Messages ── */
-.stSuccess {
-    background: rgba(60,120,60,0.12) !important;
-    border: 1px solid rgba(80,160,80,0.25) !important;
-    border-radius: 10px !important;
-    color: #7dba7d !important;
-}
-
-.stWarning {
-    background: rgba(180,140,60,0.08) !important;
-    border: 1px solid rgba(180,140,60,0.25) !important;
-    border-radius: 10px !important;
-    color: #c8a84a !important;
-}
-
-.stInfo {
-    background: rgba(60,100,160,0.1) !important;
-    border: 1px solid rgba(80,130,200,0.2) !important;
-    border-radius: 10px !important;
-    color: #7aaad0 !important;
-}
-
-.stError {
-    background: rgba(160,60,60,0.1) !important;
-    border: 1px solid rgba(200,80,80,0.2) !important;
-    border-radius: 10px !important;
-    color: #d07a7a !important;
-}
-
-/* ── Spinner ── */
-.stSpinner > div { border-top-color: #b48c3c !important; }
 
 /* ── Footer ── */
 .footer-block {
     text-align: center;
-    padding: 2rem 0 1rem;
+    padding: 3rem 0 1.5rem;
 }
 
 .footer-text {
     font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    color: #3a3528;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: #a09580;
     text-transform: uppercase;
 }
 
 .footer-dot {
     color: #b48c3c;
-    margin: 0 0.5em;
+    margin: 0 0.4em;
 }
 
-/* ── Subheader override ── */
 h2, h3 { display: none !important; }
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #1a1914; }
-::-webkit-scrollbar-thumb { background: #3a3020; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #b48c3c; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -312,9 +267,9 @@ with tab1:
         key="search_input"
     )
 
-    col_btn, col_empty = st.columns([1, 3])
+    col_btn, col_empty = st.columns([1, 2])
     with col_btn:
-        cari = st.button("Cari Kata", type="primary", use_container_width=True)
+        cari = st.button("Cari Kata", type="primary", key="btn_cari")
 
     if cari:
         if kata_kunci.strip() == "":
@@ -358,34 +313,82 @@ with tab1:
                     else:
                         st.info(f"Tidak ada data ditemukan untuk kata **'{kata_kunci}'**.")
 
-with tab2:
-    st.markdown('<p class="section-label">Eksekusi Query SPARQL Manual</p>', unsafe_allow_html=True)
-    
-    default_query = """PREFIX etimologi: <http://etimologi.id/ontology#>
+with tab2: 
+    templates = {
+        "Preview Data": """PREFIX etimologi: <http://etimologi.id/ontology#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-SELECT ?kata ?asalBahasa ?bentukAsli
+SELECT ?kata ?asalBahasa ?bentukAsli ?maknaKata
 WHERE {
   ?instans a etimologi:KataSerapan ;
            rdfs:label ?kata ;
            etimologi:berasalDariBahasa ?bhsNode ;
-           etimologi:memilikiBentukAsal ?asalNode .
+           etimologi:memilikiBentukAsal ?asalNode ;
+           etimologi:memilikiMakna ?maknaNode .
+
   ?bhsNode rdfs:label ?asalBahasa .
   ?asalNode rdf:value ?bentukAsli .
+  ?maknaNode rdf:value ?maknaKata .
 }
-LIMIT 10"""
+LIMIT 20""",
+
+        "Statistik Bahasa": """PREFIX etimologi: <http://etimologi.id/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?asalBahasa (COUNT(?instans) AS ?TotalKata)
+WHERE {
+  ?instans a etimologi:KataSerapan ;
+           etimologi:berasalDariBahasa ?bhsNode .
+  ?bhsNode rdfs:label ?asalBahasa .
+}
+GROUP BY ?asalBahasa
+ORDER BY DESC(?TotalKata)""",
+
+        "Filter Negara": """PREFIX etimologi: <http://etimologi.id/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?kata ?bentukAsli ?maknaKata
+WHERE {
+  ?instans a etimologi:KataSerapan ;
+           rdfs:label ?kata ;
+           etimologi:berasalDariBahasa ?bhsNode ;
+           etimologi:memilikiBentukAsal ?asalNode ;
+           etimologi:memilikiMakna ?maknaNode .
+
+  ?bhsNode rdfs:label ?asalBahasa .
+  FILTER regex(?asalBahasa, "Belanda", "i")
+
+  ?asalNode rdf:value ?bentukAsli .
+  ?maknaNode rdf:value ?maknaKata .
+}
+LIMIT 15"""
+    }
+
+    st.markdown('<p class="section-label">Pilih Template</p>', unsafe_allow_html=True)
+
+    pilihan_template = st.selectbox(
+        label="template",
+        options=list(templates.keys()),
+        label_visibility="collapsed"
+    )
+
+    st.markdown(
+        '<p class="section-label" style="margin-top:1.5rem;">Editor SPARQL Query</p>',
+        unsafe_allow_html=True
+    )
 
     query_input = st.text_area(
         label="query",
-        value=default_query,
+        value=templates[pilihan_template],
         height=260,
         label_visibility="collapsed"
     )
 
-    col_btn2, col_empty2 = st.columns([1, 3])
+    col_btn2, col_empty2 = st.columns([1, 2])
     with col_btn2:
-        jalankan = st.button("Jalankan Query", use_container_width=True)
+        jalankan = st.button("Jalankan Query", key="btn_query")
 
     if jalankan:
         if query_input.strip() == "":
@@ -402,16 +405,3 @@ LIMIT 10"""
                         st.dataframe(df_custom, use_container_width=True)
                     else:
                         st.warning("Query berhasil dijalankan, tetapi tidak ada data yang cocok.")
-
-# ── Footer ───────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="footer-block">
-    <p class="footer-text">
-        Proyek Semantic Web
-        <span class="footer-dot">◆</span>
-        Kelompok 6
-        <span class="footer-dot">◆</span>
-        Apache Jena Fuseki
-    </p>
-</div>
-""", unsafe_allow_html=True)
