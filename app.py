@@ -256,8 +256,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Tabs ────────────────────────────────────────────────────────────────────
-tab1, tab2 = st.tabs(["Pencarian Kata", "SPARQL Query"])
+tab1, tab2, tab3 = st.tabs(["Pencarian Kata", "Eksplorasi Data", "SPARQL Query"])
 
+# ==============================================================================
+# TAB 1: PENCARIAN KATA
+# ==============================================================================
 with tab1:
     st.markdown('<p class="section-label">Pencarian Cepat</p>', unsafe_allow_html=True)
     kata_kunci = st.text_input(
@@ -313,7 +316,109 @@ with tab1:
                     else:
                         st.info(f"Tidak ada data ditemukan untuk kata **'{kata_kunci}'**.")
 
-with tab2: 
+# ==============================================================================
+# TAB 2: EKSPLORASI DATA (NON-SPARQL)
+# ==============================================================================
+with tab2:
+    st.markdown('<p class="section-label">Menu Eksplorasi</p>', unsafe_allow_html=True)
+    
+    # Pengguna tinggal memilih lewat dropdown
+    pilihan_eksplorasi = st.selectbox(
+        label="Menu Eksplorasi", 
+        options=["Statistik Bahasa Sumber", "Filter Berdasarkan Negara/Bahasa"],
+        label_visibility="collapsed"
+    )
+    
+    st.markdown("<hr style='margin: 1rem 0; border: none; border-top: 1px dashed rgba(180,140,60,0.3);'>", unsafe_allow_html=True)
+
+    # --- FITUR 1: STATISTIK BAHASA ---
+    if pilihan_eksplorasi == "Statistik Bahasa Sumber":
+        st.markdown("**Statistik Jumlah Kata Serapan Berdasarkan Bahasa Asal**")
+        
+        if st.button("Tampilkan Statistik", type="primary", key="btn_stats"):
+            with st.spinner("Menghitung statistik..."):
+                query_stats = """
+                PREFIX etimologi: <http://etimologi.id/ontology#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+                SELECT ?asalBahasa (COUNT(?instans) AS ?TotalKata)
+                WHERE {
+                  ?instans a etimologi:KataSerapan ;
+                           etimologi:berasalDariBahasa ?bhsNode .
+                  ?bhsNode rdfs:label ?asalBahasa .
+                }
+                GROUP BY ?asalBahasa
+                ORDER BY DESC(?TotalKata)
+                """
+                raw_stats = run_sparql_query(query_stats)
+                
+                if raw_stats:
+                    df_stats = parse_results_to_dataframe(raw_stats)
+                    if not df_stats.empty:
+                        # Konversi tipe data TotalKata ke numerik untuk chart
+                        df_stats["TotalKata"] = pd.to_numeric(df_stats["TotalKata"])
+                        
+                        col_chart, col_data = st.columns([2, 1])
+                        
+                        with col_data:
+                            df_display = df_stats.rename(columns={"asalBahasa": "Bahasa Sumber", "TotalKata": "Jumlah Kata"})
+                            st.dataframe(df_display, use_container_width=True)
+                            
+                        with col_chart:
+                            # Menampilkan Bar Chart bawaan Streamlit
+                            st.bar_chart(data=df_stats, x="asalBahasa", y="TotalKata", color="#b48c3c")
+                    else:
+                        st.info("Belum ada data untuk ditampilkan.")
+
+    # --- FITUR 2: FILTER NEGARA/BAHASA ---
+    elif pilihan_eksplorasi == "Filter Berdasarkan Negara/Bahasa":
+        # Pilihan bahasa umum (bisa disesuaikan dengan data ontologimu)
+        pilihan_bahasa = st.selectbox(
+            label="Pilih Bahasa Asal",
+            options=["Belanda", "Arab", "Inggris", "Sanskerta", "Portugis", "Cina", "Persia", "Hindi", "Jepang"]
+        )
+        
+        if st.button("Tampilkan Data", type="primary", key="btn_filter"):
+            with st.spinner(f"Mencari kata serapan dari bahasa {pilihan_bahasa}..."):
+                query_filter = f"""
+                PREFIX etimologi: <http://etimologi.id/ontology#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+                SELECT ?kata ?bentukAsli ?maknaKata
+                WHERE {{
+                  ?instans a etimologi:KataSerapan ;
+                           rdfs:label ?kata ;
+                           etimologi:berasalDariBahasa ?bhsNode ;
+                           etimologi:memilikiBentukAsal ?asalNode ;
+                           etimologi:memilikiMakna ?maknaNode .
+
+                  ?bhsNode rdfs:label ?asalBahasa .
+                  FILTER regex(?asalBahasa, "{pilihan_bahasa}", "i")
+
+                  ?asalNode rdf:value ?bentukAsli .
+                  ?maknaNode rdf:value ?maknaKata .
+                }}
+                """
+                raw_filter = run_sparql_query(query_filter)
+                
+                if raw_filter:
+                    df_filter = parse_results_to_dataframe(raw_filter)
+                    if not df_filter.empty:
+                        st.success(f"✓ Ditemukan **{len(df_filter)}** kata serapan dari bahasa **{pilihan_bahasa}**.")
+                        df_display = df_filter.rename(columns={
+                            "kata": "Kata Serapan",
+                            "bentukAsli": "Bentuk Asli",
+                            "maknaKata": "Makna"
+                        })
+                        st.dataframe(df_display, use_container_width=True)
+                    else:
+                        st.info(f"Tidak ada data kata serapan dari bahasa **{pilihan_bahasa}**.")
+
+# ==============================================================================
+# TAB 3: SPARQL QUERY EDITOR (ADVANCED)
+# ==============================================================================
+with tab3: 
     templates = {
         "Preview Data": """PREFIX etimologi: <http://etimologi.id/ontology#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -331,42 +436,10 @@ WHERE {
   ?asalNode rdf:value ?bentukAsli .
   ?maknaNode rdf:value ?maknaKata .
 }
-LIMIT 20""",
-
-        "Statistik Bahasa": """PREFIX etimologi: <http://etimologi.id/ontology#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-SELECT ?asalBahasa (COUNT(?instans) AS ?TotalKata)
-WHERE {
-  ?instans a etimologi:KataSerapan ;
-           etimologi:berasalDariBahasa ?bhsNode .
-  ?bhsNode rdfs:label ?asalBahasa .
-}
-GROUP BY ?asalBahasa
-ORDER BY DESC(?TotalKata)""",
-
-        "Filter Negara": """PREFIX etimologi: <http://etimologi.id/ontology#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
-SELECT ?kata ?bentukAsli ?maknaKata
-WHERE {
-  ?instans a etimologi:KataSerapan ;
-           rdfs:label ?kata ;
-           etimologi:berasalDariBahasa ?bhsNode ;
-           etimologi:memilikiBentukAsal ?asalNode ;
-           etimologi:memilikiMakna ?maknaNode .
-
-  ?bhsNode rdfs:label ?asalBahasa .
-  FILTER regex(?asalBahasa, "Belanda", "i")
-
-  ?asalNode rdf:value ?bentukAsli .
-  ?maknaNode rdf:value ?maknaKata .
-}
-LIMIT 15"""
+LIMIT 20"""
     }
 
-    st.markdown('<p class="section-label">Pilih Template</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-label">Pilih Template Bebas</p>', unsafe_allow_html=True)
 
     pilihan_template = st.selectbox(
         label="template",
