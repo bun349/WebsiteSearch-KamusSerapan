@@ -1,10 +1,10 @@
-# 📖 Kamus Kata Serapan
+# Kamus Kata Serapan
 
 Aplikasi pencarian etimologi kata serapan dalam Bahasa Indonesia, dibangun menggunakan teknologi Semantic Web (RDF/SPARQL) dengan Apache Jena Fuseki sebagai backend dan Streamlit sebagai antarmuka pengguna.
 
 ---
 
-## 📑 Daftar Isi
+## Daftar Isi
 
 - [Prasyarat Sistem](#prasyarat-sistem)
 - [Panduan Instalasi](#panduan-instalasi)
@@ -14,7 +14,7 @@ Aplikasi pencarian etimologi kata serapan dalam Bahasa Indonesia, dibangun mengg
 
 ---
 
-## 🛠️ Prasyarat Sistem
+## Prasyarat Sistem
 
 Sebelum memulai, pastikan perangkat kamu sudah terinstal perangkat lunak berikut:
 
@@ -24,7 +24,7 @@ Sebelum memulai, pastikan perangkat kamu sudah terinstal perangkat lunak berikut
 
 ---
 
-## 🚀 Panduan Instalasi
+## Panduan Instalasi
 
 ### Langkah 1: Mengunduh Repositori Proyek (GitHub)
 
@@ -118,7 +118,7 @@ Infrastruktur backend sudah siap, dan data sudah tersedia. Sekarang bisa menjala
 
 ---
 
-## 📋 Panduan Penggunaan Aplikasi
+## Panduan Penggunaan Aplikasi
 
 Sebelum menjalankan dan mengeksplorasi aplikasi, pastikan Anda telah menyelesaikan tahap instalasi awal. Berikut adalah daftar periksa (*checklist*) prasyarat sistem Anda:
 
@@ -131,7 +131,7 @@ Sebelum menjalankan dan mengeksplorasi aplikasi, pastikan Anda telah menyelesaik
 
 Berikut ini panduan untuk menggunakan aplikasi ini berdasarkan tiga fitur utamanya:
 
-### 🔎 Fitur 1: Pencarian Cepat (Tab "Pencarian Kata")
+### Fitur 1: Pencarian Cepat (Tab "Pencarian Kata")
 
 Fitur ini dirancang untuk pengguna umum yang ingin mencari informasi etimologi suatu kata secara instan tanpa perlu memahami bahasa *query*.
 
@@ -139,13 +139,13 @@ Fitur ini dirancang untuk pengguna umum yang ingin mencari informasi etimologi s
 
 1. Buka aplikasi di *browser* Anda. Secara bawaan, Anda akan langsung berada di tab **Pencarian Kata**.
 2. Temukan kolom teks pencarian pada bagian "Pencarian Cepat".
-3. Masukkan kata kunci yang ingin Anda cari (misalnya: `absen`, `kaisar`, atau `gratis`).
+3. Masukkan kata kunci yang ingin Anda cari (misalnya: `absen`, `kaisar`).
 4. Klik tombol emas bertuliskan **Cari Kata**.
 5. Tunggu proses pemuatan selesai. Hasil akan ditampilkan dalam bentuk tabel yang memuat empat kolom informasi: **Kata Serapan**, **Bahasa Sumber**, **Bentuk Asli**, dan **Makna**.
 
 > **Catatan:** Jika kata yang dicari tidak ada di dalam database, aplikasi akan memunculkan pesan informasi bahwa data tidak ditemukan.
 
-### 📊 Fitur 2: Visualisasi & Filter (Tab "Eksplorasi Data")
+### Fitur 2: Visualisasi & Statistik Data (Tab "Eksplorasi Data")
 
 Fitur interaktif ini memudahkan pengguna melihat rekapitulasi data secara visual dan memfilter kata serapan berdasarkan bahasa asalnya, tanpa perlu mengeksekusi *query* secara manual.
 
@@ -156,21 +156,20 @@ Fitur interaktif ini memudahkan pengguna melihat rekapitulasi data secara visual
    - **Statistik Bahasa Sumber:** Klik tombol **Tampilkan Statistik** untuk melihat diagram batang (*bar chart*) agregasi bahasa asal dan tabel yang menunjukkan jumlah kata serapan dari masing-masing bahasa.
    - **Filter Berdasarkan Negara/Bahasa:** Pilih bahasa spesifik dari *dropdown* (misal: Belanda, Arab, Sanskerta), lalu klik **Tampilkan Data** untuk melihat daftar lengkap kata serapan yang berasal dari bahasa tersebut beserta makna dan bentuk aslinya.
 
-### 💻 Fitur 3: Eksekusi Manual (Tab "SPARQL Query")
+### Fitur 3: Eksekusi Manual (Tab "SPARQL Query")
 
 Fitur ini ditujukan untuk *developer* yang ingin mengekstrak data spesifik dengan mendefinisikan *triple* RDF (subjek, predikat, objek) menggunakan syntax SPARQL secara bebas.
 
 **Cara Penggunaan:**
 
 1. Klik tab **SPARQL Query** di bagian atas halaman.
-2. Pilih *template* yang tersedia (misal: "Preview Data"). Area teks (*editor*) akan otomatis terisi dengan *query* bawaan yang mengambil 20 data pertama.
-3. Anda dapat menghapus, memodifikasi, atau memasukkan *query* SPARQL yang lebih kompleks di dalam *editor* tersebut.
-4. Setelah *query* siap, klik tombol **Jalankan Query**.
-5. Hasil ekstraksi data mentah akan secara otomatis diproses ke dalam format Pandas DataFrame untuk memudahkan pembacaan.
+2. Anda dapat menghapus, memodifikasi, atau memasukkan *query* SPARQL yang lebih kompleks di dalam *editor* tersebut.
+3. Setelah *query* siap, klik tombol **Jalankan Query**.
+4. Hasil ekstraksi data mentah akan secara otomatis diproses ke dalam format Pandas DataFrame untuk memudahkan pembacaan.
 
 ---
 
-## 🖼️ Contoh Hasil
+## Contoh Hasil
 
 ### 1. Tampilan Awal Aplikasi
 
@@ -249,7 +248,7 @@ Hasil dari query template di atas, ditampilkan dalam format Pandas DataFrame.
 
 ---
 
-## ❗ Troubleshooting
+## Troubleshooting
 
 | Masalah | Kemungkinan Sebab | Solusi |
 |---|---|---|

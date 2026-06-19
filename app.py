@@ -1,5 +1,8 @@
 import streamlit as st
 from SPARQLWrapper import SPARQLWrapper, JSON
+from pyvis.network import Network
+import streamlit.components.v1 as components
+import tempfile
 import pandas as pd
 
 # 1. Konfigurasi SPARQL Endpoint
@@ -15,6 +18,9 @@ def run_sparql_query(query):
         results = sparql.query().convert()
         return results
     except Exception as e:
+        if "Peek iterator is already empty" in str(e) or "500" in str(e):
+            return {"head": {"vars": []}, "results": {"bindings": []}}
+        
         st.error(f"Gagal terhubung ke SPARQL Endpoint. Pastikan Apache Jena Fuseki berjalan.\nDetail Error: {e}")
         return None
 
@@ -37,6 +43,145 @@ def parse_results_to_dataframe(results):
     df.index = df.index + 1
     return df
 
+
+def tampilkan_graph_kata(kata):
+    query_graph = f"""
+    PREFIX etimologi: <http://etimologi.id/ontology#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+    SELECT ?kata ?asalBahasa ?bentukAsli ?makna
+    WHERE {{
+        ?instans a etimologi:KataSerapan ;
+                 rdfs:label ?kata ;
+                 etimologi:berasalDariBahasa ?bhsNode ;
+                 etimologi:memilikiBentukAsal ?asalNode ;
+                 etimologi:memilikiMakna ?maknaNode .
+
+        ?bhsNode rdfs:label ?asalBahasa .
+        ?asalNode rdf:value ?bentukAsli .
+        ?maknaNode rdf:value ?makna .
+
+        FILTER(REGEX(STR(?kata), "{kata}", "i"))
+    }}
+    """
+
+    results = run_sparql_query(query_graph)
+
+    if not results:
+        return
+
+    bindings = results["results"]["bindings"]
+
+    if len(bindings) == 0:
+        st.warning("Graph tidak memiliki data.")
+        return
+
+    net = Network(
+        height="700px",  
+        width="100%",
+        directed=True,
+        bgcolor="#fcfbfa",
+        font_color="#2c2519",
+    )
+
+    added_nodes = set()
+
+    for row in bindings:
+        kata_serapan = row["kata"]["value"]
+        bahasa = row["asalBahasa"]["value"]
+        bentuk = row["bentukAsli"]["value"]
+        makna = row["makna"]["value"]
+
+        # 1. Node Kata Serapan
+        if kata_serapan not in added_nodes:
+            net.add_node(
+                kata_serapan,
+                label=kata_serapan,
+                color="#b48c3c",
+                shape="box",
+                margin=10,
+                font={"size": 16, "face": "Courier"},
+            )
+            added_nodes.add(kata_serapan)
+
+        # 2. Node Bahasa asal
+        if bahasa not in added_nodes:
+            net.add_node(
+                bahasa,
+                label=bahasa,
+                color="#AED6F1",
+                shape="ellipse",
+                margin=10,
+                font={"size": 14},
+            )
+            added_nodes.add(bahasa)
+
+        # 3. Node Bentuk Asli
+        if bentuk not in added_nodes:
+            net.add_node(
+                bentuk,
+                label=bentuk,
+                color="#ABEBC6",
+                shape="ellipse",
+                margin=10,
+                font={"size": 14},
+            )
+            added_nodes.add(bentuk)
+
+        # 4. Node Makna 
+        if makna not in added_nodes:
+            net.add_node(
+                makna,
+                label=makna,
+                color="#e5c158",
+                shape="box",
+                margin=12,
+                font={"size": 14},
+            )
+            added_nodes.add(makna)
+
+        net.add_edge(
+            kata_serapan,
+            bahasa,
+            label="berasal dari",
+            color="#b48c3c",
+            font={"align": "top", "size": 12},
+        )
+
+        net.add_edge(
+            kata_serapan,
+            bentuk,
+            label="bentuk asli",
+            color="#b48c3c",
+            font={"align": "top", "size": 12},
+        )
+
+        net.add_edge(
+            kata_serapan,
+            makna,
+            label="makna",
+            color="#b48c3c",
+            font={"align": "top", "size": 12},
+        )
+
+    net.barnes_hut(
+        gravity=-2000, 
+        central_gravity=0.1,
+        spring_length=200, 
+        spring_strength=0.05,
+        damping=0.09,
+    )
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
+        net.save_graph(tmp_file.name)
+
+        with open(tmp_file.name, "r", encoding="utf-8") as f:
+            html = f.read()
+
+    components.html(html, height=750, scrolling=True)
+    
+
 # 2. Pengaturan UI Streamlit
 st.set_page_config(
     page_title="Kamus Serapan — Semantic Web",
@@ -44,7 +189,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ── Custom CSS (Rapi, Lurus Tengah & Light Mode) ─────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght=700;900&family=DM+Sans:wght=300;400;500&family=DM+Mono:wght=400;500&display=swap');
@@ -258,9 +402,7 @@ st.markdown("""
 # ── Tabs ────────────────────────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["Pencarian Kata", "Eksplorasi Data", "SPARQL Query"])
 
-# ==============================================================================
 # TAB 1: PENCARIAN KATA
-# ==============================================================================
 with tab1:
     st.markdown('<p class="section-label">Pencarian Cepat</p>', unsafe_allow_html=True)
     kata_kunci = st.text_input(
@@ -313,12 +455,13 @@ with tab1:
                             "maknaKata": "Makna"
                         })
                         st.dataframe(df_display, use_container_width=True)
+                        st.markdown("### Knowledge Graph")
+
+                        tampilkan_graph_kata(kata_kunci)
                     else:
                         st.info(f"Tidak ada data ditemukan untuk kata **'{kata_kunci}'**.")
 
-# ==============================================================================
 # TAB 2: EKSPLORASI DATA (NON-SPARQL)
-# ==============================================================================
 with tab2:
     st.markdown('<p class="section-label">Menu Eksplorasi</p>', unsafe_allow_html=True)
     
@@ -331,7 +474,7 @@ with tab2:
     
     st.markdown("<hr style='margin: 1rem 0; border: none; border-top: 1px dashed rgba(180,140,60,0.3);'>", unsafe_allow_html=True)
 
-    # --- FITUR 1: STATISTIK BAHASA ---
+    # FITUR 1: STATISTIK BAHASA
     if pilihan_eksplorasi == "Statistik Bahasa Sumber":
         st.markdown("**Statistik Jumlah Kata Serapan Berdasarkan Bahasa Asal**")
         
@@ -370,12 +513,11 @@ with tab2:
                     else:
                         st.info("Belum ada data untuk ditampilkan.")
 
-    # --- FITUR 2: FILTER NEGARA/BAHASA ---
+    # FITUR 2: FILTER NEGARA/BAHASA
     elif pilihan_eksplorasi == "Filter Berdasarkan Negara/Bahasa":
-        # Pilihan bahasa umum (bisa disesuaikan dengan data ontologimu)
         pilihan_bahasa = st.selectbox(
             label="Pilih Bahasa Asal",
-            options=["Belanda", "Arab", "Inggris", "Sanskerta", "Portugis", "Cina", "Persia", "Hindi", "Jepang"]
+            options=["Belanda", "Arab", "Latin", "Sanskerta", "Portugis", "Tamil"]
         )
         
         if st.button("Tampilkan Data", type="primary", key="btn_filter"):
@@ -415,47 +557,35 @@ with tab2:
                     else:
                         st.info(f"Tidak ada data kata serapan dari bahasa **{pilihan_bahasa}**.")
 
-# ==============================================================================
-# TAB 3: SPARQL QUERY EDITOR (ADVANCED)
-# ==============================================================================
+# TAB 3: SPARQL QUERY EDITOR
 with tab3: 
-    templates = {
-        "Preview Data": """PREFIX etimologi: <http://etimologi.id/ontology#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
-SELECT ?kata ?asalBahasa ?bentukAsli ?maknaKata
-WHERE {
-  ?instans a etimologi:KataSerapan ;
-           rdfs:label ?kata ;
-           etimologi:berasalDariBahasa ?bhsNode ;
-           etimologi:memilikiBentukAsal ?asalNode ;
-           etimologi:memilikiMakna ?maknaNode .
-
-  ?bhsNode rdfs:label ?asalBahasa .
-  ?asalNode rdf:value ?bentukAsli .
-  ?maknaNode rdf:value ?maknaKata .
-}
-LIMIT 20"""
-    }
-
-    st.markdown('<p class="section-label">Pilih Template Bebas</p>', unsafe_allow_html=True)
-
-    pilihan_template = st.selectbox(
-        label="template",
-        options=list(templates.keys()),
-        label_visibility="collapsed"
-    )
-
     st.markdown(
         '<p class="section-label" style="margin-top:1.5rem;">Editor SPARQL Query</p>',
         unsafe_allow_html=True
     )
+    
+    query_default = """PREFIX etimologi: <http://etimologi.id/ontology#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+    SELECT ?kata ?asalBahasa ?bentukAsli ?maknaKata
+    WHERE {
+    ?instans a etimologi:KataSerapan ;
+            rdfs:label ?kata ;
+            etimologi:berasalDariBahasa ?bhsNode ;
+            etimologi:memilikiBentukAsal ?asalNode ;
+            etimologi:memilikiMakna ?maknaNode .
+
+    ?bhsNode rdfs:label ?asalBahasa .
+    ?asalNode rdf:value ?bentukAsli .
+    ?maknaNode rdf:value ?maknaKata .
+    }
+    LIMIT 20"""
 
     query_input = st.text_area(
         label="query",
-        value=templates[pilihan_template],
-        height=260,
+        value=query_default,
+        height=320,
         label_visibility="collapsed"
     )
 
