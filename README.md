@@ -10,7 +10,6 @@ Aplikasi pencarian etimologi kata serapan dalam Bahasa Indonesia, dibangun mengg
 - [Panduan Instalasi](#panduan-instalasi)
 - [Panduan Penggunaan](#panduan-penggunaan-aplikasi)
 - [Contoh Hasil](#contoh-hasil)
-- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -172,49 +171,49 @@ Editor bebas untuk menjalankan *query* SPARQL kustom langsung ke endpoint Fuseki
 
 ### 1. Tampilan Awal Aplikasi
 
-![Tampilan Awal Aplikasi](docs/screenshots/01-tampilan-awal.png)
+![Tampilan Awal Aplikasi](docs/TampilanAwal.png)
 
 ### 2. Pencarian Kata — Hasil Ditemukan + Knowledge Graph
 
 Contoh pencarian kata `"absen"`:
 
-![Hasil Pencarian Kata Absen](docs/screenshots/02-hasil-pencarian-absen.png)
+![Hasil Pencarian Kata Absen](docs/TampilanHasil1.png)
 
 | Kata Serapan | Bahasa Sumber | Bentuk Asli | Makna |
 |---|---|---|---|
-| absen | Belanda | absent | tidak hadir |
+| absen | Belanda | absentie | tidak hadir |
 
 Visualisasi *Knowledge Graph* yang muncul di bawah tabel:
 
-![Knowledge Graph Kata Absen](docs/screenshots/03-knowledge-graph-absen.png)
+![Knowledge Graph Kata Absen](docs/knowledge.png)
 
 ### 3. Eksplorasi Data — Statistik Bahasa Sumber
 
 Bar chart (kiri) dan tabel rekapitulasi (kanan):
 
-![Statistik Bahasa Sumber](docs/screenshots/04-statistik-bahasa-sumber.png)
+![Statistik Bahasa Sumber](docs/TampilanStatistik.png)
 
 | Bahasa Sumber | Jumlah Kata |
 |---|---|
-| Belanda | 120 |
-| Arab | 85 |
-| Sanskerta | 40 |
+| Arab | 288 |
+| Belanda | 121 |
+| Sanskerta | 46 |
+| Latin | 22 |
+| Portugis | 19 |
+| Tamil | 5 |
 
 ### 4. Eksplorasi Data — Filter Berdasarkan Bahasa
 
-Contoh filter dengan bahasa `"Latin"`:
+Contoh filter dengan bahasa `"Belanda"`:
 
-![Filter Berdasarkan Bahasa](docs/screenshots/05-filter-bahasa-latin.png)
+![Filter Berdasarkan Bahasa](docs/TampilanFilter.png)
 
-| Kata Serapan | Bentuk Asli | Makna |
-|---|---|---|
-| abdomen | abdomen | bagian perut |
 
 ### 5. Eksekusi Manual — Tab SPARQL Query
 
 Editor dengan query default `LIMIT 20`:
 
-![Editor SPARQL Query](docs/screenshots/06-editor-sparql.png)
+![Editor SPARQL Query](docs/Kueri.png)
 
 ```sparql
 PREFIX etimologi: <http://etimologi.id/ontology#>
@@ -238,29 +237,6 @@ LIMIT 20
 
 ### 6. Hasil Eksekusi Query SPARQL
 
-![Hasil Query SPARQL](docs/screenshots/07-hasil-query-sparql.png)
-
-### 7. Peringatan / Error
-
-- Query kosong → ⚠ **Query tidak boleh kosong.**
-- Query valid tapi tidak ada data cocok → **Query berhasil dijalankan, tetapi tidak ada data yang cocok.**
-- Endpoint tidak terhubung → **Gagal terhubung ke SPARQL Endpoint. Pastikan Apache Jena Fuseki berjalan.**
-
-![Peringatan Query](docs/screenshots/08-peringatan-query.png)
+![Hasil Eksekusi Kueri](docs/HasilKueri.png)
 
 ---
-
-## ❗ Troubleshooting
-
-| Masalah | Kemungkinan Sebab | Solusi |
-|---|---|---|
-| "Gagal terhubung ke SPARQL Endpoint..." | Server Fuseki tidak aktif | Pastikan `fuseki-server` berjalan di `http://localhost:3030` |
-| Error nama dataset | Nama dataset salah ketik | Pastikan nama dataset persis `kamus-serapan` |
-| Hasil pencarian/eksplorasi kosong | Data RDF belum diunggah | Pastikan file `.ttl`/`.rdf` sudah di-*upload* ke dataset |
-| Knowledge Graph tidak muncul / kosong | Tidak ada data cocok dengan kata yang dicari | Coba kata kunci lain, atau pastikan data RDF lengkap |
-| `streamlit: command not found` | Virtual environment belum aktif / library belum terinstal | Aktifkan venv, jalankan ulang `pip install -r requirements.txt` |
-| `ModuleNotFoundError: No module named 'pyvis'` | Library PyVis belum terinstal | Jalankan `pip install pyvis` atau pastikan ada di `requirements.txt` |
-
----
-
-## 📂 Struktur Folder (disarankan)
