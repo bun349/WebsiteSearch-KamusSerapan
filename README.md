@@ -176,13 +176,13 @@ Fitur ini ditujukan untuk *developer* yang ingin mengekstrak data spesifik denga
 
 Tampilan bawaan ketika aplikasi pertama kali dibuka, berfokus pada kolom pencarian dengan desain *light mode*.
 
-![Tampilan Awal Aplikasi](docs/screenshots/01-tampilan-awal.png)
+![Tampilan Awal Aplikasi](docs/TampilanAwal.png)
 
 ### 2. Pencarian Kata — Hasil Ditemukan
 
 Contoh ketika mengeksekusi pencarian kata `"absen"` pada tab **Pencarian Kata**.
 
-![Hasil Pencarian Kata Absen](docs/screenshots/02-hasil-pencarian-absen.png)
+![Hasil Pencarian Kata Absen](docs/TampilanHasil1.png)
 
 | Kata Serapan | Bahasa Sumber | Bentuk Asli | Makna |
 |---|---|---|---|
@@ -192,7 +192,7 @@ Contoh ketika mengeksekusi pencarian kata `"absen"` pada tab **Pencarian Kata**.
 
 Contoh saat memilih menu visualisasi statistik. Aplikasi menampilkan *bar chart* di sebelah kiri dan tabel rekapitulasi di sebelah kanan.
 
-![Statistik Bahasa Sumber](docs/screenshots/03-statistik-bahasa-sumber.png)
+![Statistik Bahasa Sumber](docs/TampilanStatistik.png)
 
 | Bahasa Sumber | Jumlah Kata |
 |---|---|
@@ -204,13 +204,13 @@ Contoh saat memilih menu visualisasi statistik. Aplikasi menampilkan *bar chart*
 
 Contoh saat memilih filter bahasa `"Arab"` pada *dropdown*, lalu menampilkan daftar kata serapan yang berasal dari bahasa tersebut.
 
-![Filter Berdasarkan Bahasa](docs/screenshots/04-filter-bahasa-arab.png)
+![Filter Berdasarkan Bahasa](docs/TampilanFilter.png)
 
 ### 5. Eksekusi Manual — Tab SPARQL Query
 
 Tampilan *editor query* SPARQL dengan *template* default untuk menginspeksi struktur data.
 
-![Editor SPARQL Query](docs/screenshots/05-editor-sparql.png)
+![Editor SPARQL Query](docs/screenshots/05-editor-sparql.png)![Editor](docs/Kueri.png)
 
 ```sparql
 PREFIX etimologi: <http://etimologi.id/ontology#>
